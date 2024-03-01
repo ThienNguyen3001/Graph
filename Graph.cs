@@ -60,7 +60,7 @@ namespace Graph
                 }
             }
 
-            return null; // Không tìm thấy đường đi từ from đến to        }
+            return new List<T>(); // Không tìm thấy đường đi từ from đến to        }
         }
         public List<T> DFS(T from, T to)
         {
