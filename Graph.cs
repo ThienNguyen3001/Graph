@@ -30,21 +30,58 @@ namespace Graph
                 Console.WriteLine();
             }
         }
-        private List<T> BFS(T from)
+        public List<T> BFS(T from, T to)
         {
-            Dictionary<T, bool> visited = new Dictionary<T, bool>();
-            List<T> result = new List<T>();
+            Dictionary<T, T> parent = new Dictionary<T, T>();
             Queue<T> queue = new Queue<T>();
 
-            visited[from] = true;
             queue.Enqueue(from);
+            parent[from] = default(T); // Đỉnh xuất phát không có đỉnh cha
 
             while (queue.Count > 0)
             {
                 T current = queue.Dequeue();
-                result.Add(current);
 
-                if (!edgesList.ContainsKey(current)) // nếu ko có tổ tiên, bỏ qua
+                if (current.Equals(to))
+                {
+                    return ReconstructPath(parent, to);
+                }
+
+                if (!edgesList.ContainsKey(current)) // Nếu không có đỉnh con, bỏ qua
+                    continue;
+
+                foreach (T child in edgesList[current])
+                {
+                    if (!parent.ContainsKey(child))
+                    {
+                        parent[child] = current;
+                        queue.Enqueue(child);
+                    }
+                }
+            }
+
+            return null; // Không tìm thấy đường đi từ from đến to        }
+        }
+        public List<T> DFS(T from, T to)
+        {
+            Dictionary<T, bool> visited = new Dictionary<T, bool>();
+            Stack<T> stack = new Stack<T>();
+            Dictionary<T, T> parent = new Dictionary<T, T>();
+
+            stack.Push(from);
+            visited[from] = true;
+            parent[from] = default(T);
+
+            while (stack.Count > 0)
+            {
+                T current = stack.Pop();
+
+                if (current.Equals(to))
+                {
+                    return ReconstructPath(parent, to);
+                }
+
+                if (!edgesList.ContainsKey(current)) // Nếu không có đỉnh con, bỏ qua
                     continue;
 
                 foreach (T child in edgesList[current])
@@ -52,63 +89,25 @@ namespace Graph
                     if (!visited.ContainsKey(child) || !visited[child])
                     {
                         visited[child] = true;
-                        queue.Enqueue(child);
+                        parent[child] = current;
+                        stack.Push(child);
                     }
                 }
             }
 
-            return result;
+            return new List<T>(); // Không tìm thấy đường đi từ from đến to
         }
-        public void PrintBFS(T from)
+        private List<T> ReconstructPath(Dictionary<T, T> parent, T to)
         {
-            List<T> bfs = new List<T>();
-            bfs = BFS(from);
-            foreach(var i in bfs)
+            List<T> path = new List<T>();
+            T current = to;
+            while (!current.Equals(default(T)))
             {
-                Console.Write(i+" ");
+                path.Add(current);
+                current = parent[current];
             }
-        }
-        private List<T> DFS(T from)
-        {
-            Stack<T> dfs = new Stack<T>();
-            Dictionary<T, bool> visited = new Dictionary<T, bool>();
-            List<T> result = new List<T>();
-
-            dfs.Push(from);
-            visited[from] = true; // Đánh dấu nút bắt đầu đã được thăm 
-
-            while (dfs.Count > 0)
-            {
-                T current = dfs.Pop(); // Rút đỉnh khỏi ngăn xếp
-
-                result.Add(current); 
-
-                if (!edgesList.ContainsKey(current)) // nếu ko có tổ tiên, bỏ qua
-                    continue;
-
-                foreach (T child in edgesList[current]) // Duyệt qua tất cả các con của nút hiện tại
-                {
-                    if (!visited.ContainsKey(child) || !visited[child]) // Nếu một nút con chưa được thăm
-                    {
-                        dfs.Push(child); 
-                        visited[child] = true; 
-                    }
-                }
-            }
-            return result; 
-        }
-        public void PrintDFS(T from)
-        {
-            List<T> res = new List<T>();
-            res = DFS(from);
-            foreach (var edge in res)
-            {
-                Console.Write(edge + " ");
-            }
-        }
-        public void TopoSort()
-        {
-            
-        }
+            path.Reverse();
+            return path;
+        }        
     }
 }
