@@ -7,20 +7,20 @@ namespace Graph
 {
     public class Graph<T> // dùng đồ thị có hướng
     {
-        private Dictionary<T, List<T>> edgesList;
+        private Dictionary<T, List<T>> edges;
         public Graph()
         {
-            edgesList = new Dictionary<T, List<T>>();
+            edges = new Dictionary<T, List<T>>();
         }
         public void AddEdge(T from, T to)
         {
-            if (!edgesList.ContainsKey(from))
-                edgesList[from] = new List<T>();
-            edgesList[from].Add(to);
+            if (!edges.ContainsKey(from))
+                edges[from] = new List<T>();
+            edges[from].Add(to);
         }
         public void PrintGraph()
         {
-            foreach (var vertex in edgesList)
+            foreach (var vertex in edges)
             {
                 Console.Write(vertex.Key + " -> ");
                 foreach (var neighbor in vertex.Value)
@@ -47,10 +47,10 @@ namespace Graph
                     return ReconstructPath(parent, to);
                 }
 
-                if (!edgesList.ContainsKey(current)) // Nếu không có đỉnh con, bỏ qua
+                if (!edges.ContainsKey(current)) // Nếu không có đỉnh con, bỏ qua
                     continue;
 
-                foreach (T child in edgesList[current])
+                foreach (T child in edges[current])
                 {
                     if (!parent.ContainsKey(child))
                     {
@@ -81,10 +81,10 @@ namespace Graph
                     return ReconstructPath(parent, to);
                 }
 
-                if (!edgesList.ContainsKey(current)) // Nếu không có đỉnh con, bỏ qua
+                if (!edges.ContainsKey(current)) // Nếu không có đỉnh con, bỏ qua
                     continue;
 
-                foreach (T child in edgesList[current])
+                foreach (T child in edges[current])
                 {
                     if (!visited.ContainsKey(child) || !visited[child])
                     {
